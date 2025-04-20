@@ -963,7 +963,7 @@ class _ProductsPageState extends State<ProductsPage> {
                         style: GoogleFonts.poppins(fontSize: 16),
                       ),
                       subtitle: Text(
-                        'Price: \$${product['price']?.toString() ?? 'N/A'}',
+                        'Price: ${product['price']?.toString() ?? '0'} ETB',
                         style: const TextStyle(color: Colors.grey),
                       ),
                       trailing: Row(

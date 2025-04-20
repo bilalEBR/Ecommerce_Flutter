@@ -1,11 +1,12 @@
-
-// // loginpage.dart
 // import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
 // import 'dart:convert';
 // import 'package:google_fonts/google_fonts.dart';
 // import 'package:flutter/gestures.dart';
-// import 'package:ecommerce_local/sellerhomepage.dart'; // Import SellerHomePage
+// import 'package:ecommerce_local/sellerhomepage.dart';
+// import 'package:ecommerce_local/adminpage.dart';
+// import 'package:provider/provider.dart';
+// import 'package:ecommerce_local/client-state.dart';
 
 // class LoginPage extends StatefulWidget {
 //   const LoginPage({super.key});
@@ -20,73 +21,87 @@
 //   String _password = '';
 //   String _message = '';
 
-//   Future<void> _login() async {
-//     if (_formKey.currentState!.validate()) {
-//       _formKey.currentState!.save();
 
-//       final url = Uri.parse('http://localhost:3000/login'); // Adjust for emulator/physical device
-//       try {
-//         print('Sending login request to: $url');
-//         print('Request body: ${jsonEncode({'email': _email, 'password': _password})}');
 
-//         final response = await http.post(
-//           url,
-//           headers: {'Content-Type': 'application/json'},
-//           body: jsonEncode({'email': _email, 'password': _password}),
-//         );
+//  Future<void> _login() async {
+//   if (_formKey.currentState!.validate()) {
+//     _formKey.currentState!.save();
 
-//         print('Response status code: ${response.statusCode}');
-//         print('Response body: ${response.body}');
+//     final url = Uri.parse('http://localhost:3000/login');
+//     try {
+//       print('Sending login request to: $url');
+//       print('Request body: ${jsonEncode({'email': _email, 'password': _password})}');
 
-//         if (response.headers['content-type']?.contains('application/json') ?? false) {
-//           final responseData = jsonDecode(response.body);
+//       final response = await http.post(
+//         url,
+//         headers: {'Content-Type': 'application/json'},
+//         body: jsonEncode({'email': _email, 'password': _password}),
+//       );
 
-//           setState(() {
-//             if (response.statusCode == 200) {
-//               // Extract userId and role from the response
-//               final userId = responseData['userId'].toString();
-//               final role = responseData['role']?.trim();
+//       print('Response status code: ${response.statusCode}');
+//       print('Response body: ${response.body}');
 
-//               // Navigate based on role
-//               if (role == 'client') {
-//                 Navigator.pushReplacementNamed(context, '/clientpage');
-//               } else if (role == 'seller') {
-//                 // Navigate to SellerHomePage with the sellerId
-//                 Navigator.pushReplacement(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (context) => SellerHomePage(sellerId: userId),
-//                   ),
-//                 );
-//               } else if (role == 'admin') {
-//                 Navigator.pushReplacementNamed(context, '/adminpage');
-//               } else {
-//                 _message = 'Unknown role: ${responseData['role']}';
-//               }
-//             } else if (response.statusCode == 400) {
-//               // Add handling for incorrect email or password
-//               if (responseData['error'] != null && responseData['error'].contains('Invalid email or password')) {
-//                 _message = 'Incorrect email or password';
-//               } else {
-//                 _message = responseData['error'] ?? 'Unknown error';
-//               }
-//             } else {
-//               _message = responseData['error'] ?? 'Unknown error';
-//             }
-//           });
-//         } else {
-//           setState(() {
-//             _message = 'Unexpected response format (not JSON): ${response.body.substring(0, 50)}...';
-//           });
-//         }
-//       } catch (error) {
-//         print('Error during login: $error');
+//       if (response.headers['content-type']?.contains('application/json') ?? false) {
+//         final responseData = jsonDecode(response.body);
+
 //         setState(() {
-//           _message = 'Error: $error';
+//           if (response.statusCode == 200) {
+//             final userId = responseData['userId']?.toString();
+//             final token = responseData['token'];
+//             final role = responseData['role']?.trim();
+
+//             if (userId == null || token == null || role == null) {
+//               _message = 'Invalid login response: missing userId, token, or role';
+//               print('Login response missing data: $responseData');
+//               return;
+//             }
+
+//             final clientState = Provider.of<ClientState>(context, listen: false);
+//             clientState.updateUserId(userId);
+//             clientState.updateToken(token);
+//             print('After login - userId: ${clientState.userId}, token: ${clientState.token}, role: $role');
+
+//             if (role == 'client') {
+//               Navigator.pushReplacementNamed(context, '/clientpage');
+//             } else if (role == 'seller') {
+//               Navigator.pushReplacement(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) => SellerHomePage(
+//                     sellerId: userId,
+//                     token: token,
+//                   ),
+//                 ),
+//               );
+//             } else if (role == 'admin') {
+//               Navigator.pushReplacement(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) => AdminPage(adminId: userId),
+//                 ),
+//               );
+//             } else {
+//               _message = 'Unknown role: ${responseData['role']}';
+//             }
+//           } else if (response.statusCode == 401) {
+//             _message = 'Invalid email or password';
+//           } else {
+//             _message = responseData['error'] ?? 'Unknown error';
+//           }
+//         });
+//       } else {
+//         setState(() {
+//           _message = 'Unexpected response format (not JSON): ${response.body.substring(0, 50)}...';
 //         });
 //       }
+//     } catch (error) {
+//       print('Error during login: $error');
+//       setState(() {
+//         _message = 'Error: $error';
+//       });
 //     }
 //   }
+// }
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -94,7 +109,6 @@
 //       body: SafeArea(
 //         child: Stack(
 //           children: [
-//             // Green semi-circle at the top-left with gradient
 //             Positioned(
 //               top: -100,
 //               left: -100,
@@ -114,7 +128,6 @@
 //                 ),
 //               ),
 //             ),
-
 //             Positioned(
 //               top: -100,
 //               left: -100,
@@ -134,7 +147,6 @@
 //                 ),
 //               ),
 //             ),
-
 //             Positioned(
 //               top: -100,
 //               left: -100,
@@ -154,7 +166,6 @@
 //                 ),
 //               ),
 //             ),
-//             // "Log In" text on the semi-circle
 //             Positioned(
 //               top: 50,
 //               left: 30,
@@ -174,7 +185,6 @@
 //                 ),
 //               ),
 //             ),
-//             // Main content
 //             Padding(
 //               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
 //               child: Form(
@@ -183,8 +193,7 @@
 //                   child: Column(
 //                     crossAxisAlignment: CrossAxisAlignment.start,
 //                     children: [
-//                       const SizedBox(height: 120), // Space for the header
-//                       // Email
+//                       const SizedBox(height: 120),
 //                       const Text(
 //                         'Email',
 //                         style: TextStyle(
@@ -227,7 +236,6 @@
 //                         onSaved: (value) => _email = value!,
 //                       ),
 //                       const SizedBox(height: 16),
-//                       // Password
 //                       const Text(
 //                         'Password',
 //                         style: TextStyle(
@@ -266,7 +274,6 @@
 //                         onSaved: (value) => _password = value!,
 //                       ),
 //                       const SizedBox(height: 32),
-//                       // Login Button with Similar Color to SignUp Button
 //                       SizedBox(
 //                         width: double.infinity,
 //                         child: ElevatedButton(
@@ -277,7 +284,7 @@
 //                               borderRadius: BorderRadius.circular(12),
 //                             ),
 //                             elevation: 8,
-//                             backgroundColor: Color(0xFFAB47BC), // Green color
+//                             backgroundColor: Color(0xFFAB47BC),
 //                           ),
 //                           child: Text(
 //                             'Log In',
@@ -291,25 +298,24 @@
 //                         ),
 //                       ),
 //                       const SizedBox(height: 16),
-//                       // Text to navigate to Sign Up page
 //                       SizedBox(
 //                         child: Center(
 //                           child: RichText(
 //                             text: TextSpan(
 //                               style: TextStyle(
 //                                 fontSize: 16,
-//                                 color: Colors.black, // Default color for the first part
+//                                 color: Colors.black,
 //                               ),
 //                               children: <TextSpan>[
-//                                 TextSpan(text: "Don't have an account? "), // Regular text
+//                                 TextSpan(text: "Don't have an account? "),
 //                                 TextSpan(
-//                                   text: "Sign Up", // The "Sign Up" part with different color
+//                                   text: "Sign Up",
 //                                   style: TextStyle(
 //                                     fontWeight: FontWeight.bold,
-//                                     color: Color(0xFFAB47BC), // Matching the login button color
+//                                     color: Color(0xFFAB47BC),
 //                                   ),
 //                                   recognizer: TapGestureRecognizer()..onTap = () {
-//                                     Navigator.pushNamed(context, '/signup'); // Navigate to signup page
+//                                     Navigator.pushNamed(context, '/signup');
 //                                   },
 //                                 ),
 //                               ],
@@ -317,10 +323,9 @@
 //                           ),
 //                         ),
 //                       ),
-//                       // Display error message here
 //                       const SizedBox(height: 16),
 //                       if (_message.isNotEmpty)
-//                         Center(  // Center the error message
+//                         Center(
 //                           child: Text(
 //                             _message,
 //                             style: TextStyle(
@@ -342,14 +347,20 @@
 //   }
 // }
 
-// loginpage.dart
+
+
+// version admin route 
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/gestures.dart';
-import 'package:ecommerce_local/sellerhomepage.dart'; // Import SellerHomePage
-import 'package:ecommerce_local/adminpage.dart'; // Import AdminPage
+import 'package:ecommerce_local/sellerhomepage.dart';
+import 'package:ecommerce_local/adminpage.dart';
+import 'package:provider/provider.dart';
+import 'package:ecommerce_local/client-state.dart';
+import 'clienthomepage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -364,79 +375,103 @@ class _LoginPageState extends State<LoginPage> {
   String _password = '';
   String _message = '';
 
-  Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
 
-      final url = Uri.parse('http://localhost:3000/login'); // Adjust for emulator/physical device
-      try {
-        print('Sending login request to: $url');
-        print('Request body: ${jsonEncode({'email': _email, 'password': _password})}');
 
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'email': _email, 'password': _password}),
-        );
+Future<void> _login() async {
+  if (_formKey.currentState!.validate()) {
+    _formKey.currentState!.save();
 
-        print('Response status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+    final url = Uri.parse('http://localhost:3000/login');
+    try {
+      print('Sending login request to: $url');
+      print('Request body: ${jsonEncode({'email': _email, 'password': _password})}');
 
-        if (response.headers['content-type']?.contains('application/json') ?? false) {
-          final responseData = jsonDecode(response.body);
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': _email, 'password': _password}),
+      );
 
-          setState(() {
-            if (response.statusCode == 200) {
-              // Extract userId and role from the response
-              final userId = responseData['userId'].toString();
-              final role = responseData['role']?.trim();
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-              // Navigate based on role
-              if (role == 'client') {
-                Navigator.pushReplacementNamed(context, '/clientpage');
-              } else if (role == 'seller') {
-                // Navigate to SellerHomePage with the sellerId
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SellerHomePage(sellerId: userId),
-                  ),
-                );
-              } else if (role == 'admin') {
-                // Navigate to AdminPage with the adminId
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AdminPage(adminId: userId),
-                  ),
-                );
-              } else {
-                _message = 'Unknown role: ${responseData['role']}';
-              }
-            } else if (response.statusCode == 400) {
-              // Add handling for incorrect email or password
-              if (responseData['error'] != null && responseData['error'].contains('Invalid email or password')) {
-                _message = 'Incorrect email or password';
-              } else {
-                _message = responseData['error'] ?? 'Unknown error';
-              }
-            } else {
-              _message = responseData['error'] ?? 'Unknown error';
-            }
-          });
-        } else {
-          setState(() {
-            _message = 'Unexpected response format (not JSON): ${response.body.substring(0, 50)}...';
-          });
-        }
-      } catch (error) {
-        print('Error during login: $error');
+      if (response.headers['content-type']?.contains('application/json') ?? false) {
+        final responseData = jsonDecode(response.body);
+
         setState(() {
-          _message = 'Error: $error';
+          if (response.statusCode == 200) {
+            final userId = responseData['userId']?.toString();
+            final token = responseData['token'];
+            final role = responseData['role']?.trim();
+
+            print('Raw role from response: ${responseData['role']}'); // Debug
+            print('Trimmed role: $role'); // Debug
+
+            if (userId == null || token == null || role == null) {
+              _message = 'Invalid login response: missing userId, token, or role';
+              print('Login response missing data: $responseData');
+              return;
+            }
+
+            final clientState = Provider.of<ClientState>(context, listen: false);
+            clientState.updateUserId(userId);
+            clientState.updateToken(token);
+            print('After login - userId: ${clientState.userId}, token: ${clientState.token}, role: $role');
+
+            if (role == 'client') {
+              print('Navigating to ClientPage'); // Debug
+              // Navigator.pushReplacementNamed(context, '/clientpage');
+                Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ClientHomePage(),
+                ),
+              );
+            } else if (role == 'seller') {
+              print('Navigating to SellerHomePage'); // Debug
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SellerHomePage(
+                    sellerId: userId,
+                    token: token,
+                  ),
+                ),
+              );
+            } else if (role == 'admin') {
+              print('Navigating to AdminPage'); // Debug
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AdminPage(adminId: userId),
+                ),
+              );
+            } else {
+              _message = 'Unknown role: ${responseData['role']}';
+              print('Unknown role detected'); // Debug
+            }
+          } else if (response.statusCode == 401) {
+            _message = 'Invalid email or password';
+            print('Login failed: Invalid credentials'); // Debug
+          } else {
+            _message = responseData['error'] ?? 'Unknown error';
+            print('Login failed: ${responseData['error']}'); // Debug
+          }
+        });
+      } else {
+        setState(() {
+          _message = 'Unexpected response format (not JSON): ${response.body.substring(0, 50)}...';
+          print('Unexpected response format'); // Debug
         });
       }
+    } catch (error) {
+      print('Error during login: $error');
+      setState(() {
+        _message = 'Error: $error';
+      });
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -444,7 +479,6 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Green semi-circle at the top-left with gradient
             Positioned(
               top: -100,
               left: -100,
@@ -464,7 +498,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-
             Positioned(
               top: -100,
               left: -100,
@@ -484,7 +517,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-
             Positioned(
               top: -100,
               left: -100,
@@ -504,7 +536,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            // "Log In" text on the semi-circle
             Positioned(
               top: 50,
               left: 30,
@@ -524,7 +555,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            // Main content
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Form(
@@ -533,8 +563,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 120), // Space for the header
-                      // Email
+                      const SizedBox(height: 120),
                       const Text(
                         'Email',
                         style: TextStyle(
@@ -577,7 +606,6 @@ class _LoginPageState extends State<LoginPage> {
                         onSaved: (value) => _email = value!,
                       ),
                       const SizedBox(height: 16),
-                      // Password
                       const Text(
                         'Password',
                         style: TextStyle(
@@ -616,7 +644,6 @@ class _LoginPageState extends State<LoginPage> {
                         onSaved: (value) => _password = value!,
                       ),
                       const SizedBox(height: 32),
-                      // Login Button with Similar Color to SignUp Button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -627,7 +654,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 8,
-                            backgroundColor: Color(0xFFAB47BC), // Green color
+                            backgroundColor: Color(0xFFAB47BC),
                           ),
                           child: Text(
                             'Log In',
@@ -641,25 +668,24 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      // Text to navigate to Sign Up page
                       SizedBox(
                         child: Center(
                           child: RichText(
                             text: TextSpan(
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.black, // Default color for the first part
+                                color: Colors.black,
                               ),
                               children: <TextSpan>[
-                                TextSpan(text: "Don't have an account? "), // Regular text
+                                TextSpan(text: "Don't have an account? "),
                                 TextSpan(
-                                  text: "Sign Up", // The "Sign Up" part with different color
+                                  text: "Sign Up",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFFAB47BC), // Matching the login button color
+                                    color: Color(0xFFAB47BC),
                                   ),
                                   recognizer: TapGestureRecognizer()..onTap = () {
-                                    Navigator.pushNamed(context, '/signup'); // Navigate to signup page
+                                    Navigator.pushNamed(context, '/signup');
                                   },
                                 ),
                               ],
@@ -667,10 +693,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      // Display error message here
                       const SizedBox(height: 16),
                       if (_message.isNotEmpty)
-                        Center(  // Center the error message
+                        Center(
                           child: Text(
                             _message,
                             style: TextStyle(

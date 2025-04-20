@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Local ecommerce app',
       theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: '/signup',
+      initialRoute: '/login',
       routes: {
         '/signup': (context) => const SignupPage(),
         '/login': (context) => const LoginPage(),
