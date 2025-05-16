@@ -1,8 +1,12 @@
-// clientfavorites.dart
+
+// new version 
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'client-state.dart';
+import 'productdetails.dart';
+import 'baseurl.dart';
 
 class ClientFavoritesPage extends StatelessWidget {
   const ClientFavoritesPage({super.key});
@@ -10,6 +14,11 @@ class ClientFavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final clientState = Provider.of<ClientState>(context);
+
+      // final baseUrl =  'http://localhost:3000';
+
+    // Debug favorite products
+    print('Favorite products: ${clientState.favoriteProducts}');
 
     return SingleChildScrollView(
       child: Column(
@@ -37,140 +46,169 @@ class ClientFavoritesPage extends StatelessWidget {
                     crossAxisCount: 2,
                     crossAxisSpacing: 16.0,
                     mainAxisSpacing: 16.0,
-                    childAspectRatio: 0.7,
+                    childAspectRatio: 0.7, // Match ClientHomePage
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   itemCount: clientState.favoriteProducts.length,
                   itemBuilder: (context, index) {
                     final product = clientState.favoriteProducts[index];
+                    // Debug product data
+                    print('Product[${product['_id']}]: image=${product['image']}, title=${product['title']}');
                     final imageUrl = product['image'] != null
-                        ? 'http://192.168.1.100:3000${product['image']}?t=${DateTime.now().millisecondsSinceEpoch}'
+                        ? '$baseUrl${product['image']}?t=${DateTime.now().millisecondsSinceEpoch}'
                         : null;
                     final isFavorite = clientState.favoriteProducts.any((p) => p['_id'] == product['_id']);
-                    final isInCart = clientState.cartProducts.any((p) => p['_id'] == product['_id']);
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 3,
-                            offset: const Offset(0, 2),
+                    final averageRating = product['averageRating']?.toDouble() ?? 0.0;
+                    final ratingCount = product['ratingCount']?.toString() ?? '0';
+                    return GestureDetector(
+                      onTap: () {
+                        print('Navigating to ProductDetailPage: ${product['_id']}, image=${product['image']}');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailPage(product: product),
                           ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Stack(
-                            children: [
-                              Container(
-                                height: 150,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(12),
-                                    topRight: Radius.circular(12),
-                                  ),
-                                  image: imageUrl != null
-                                      ? DecorationImage(
-                                          image: NetworkImage(imageUrl),
-                                          fit: BoxFit.cover,
-                                          onError: (exception, stackTrace) {
-                                            print('Error loading product image: $exception');
-                                          },
-                                        )
-                                      : null,
-                                ),
-                                child: imageUrl == null
-                                    ? const Center(
-                                        child: Text(
-                                          'No Image',
-                                          style: TextStyle(color: Colors.grey),
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: IconButton(
-                                  icon: Icon(
-                                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                                    color: isFavorite ? Colors.red : Colors.grey,
-                                  ),
-                                  onPressed: () {
-                                    clientState.toggleFavorite(product);
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 1,
+                              blurRadius: 3,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Stack(
                               children: [
-                                Text(
-                                  product['title'] ?? 'Unknown Product',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.star,
-                                      color: Colors.yellow,
-                                      size: 16,
+                                Container(
+                                  height: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(12),
+                                      topRight: Radius.circular(12),
                                     ),
-                                    Text(
-                                      '4.5 (120)',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 12,
-                                        color: Colors.grey,
+                                    image: imageUrl != null
+                                        ? DecorationImage(
+                                            image: NetworkImage(imageUrl),
+                                            fit: BoxFit.cover,
+                                            onError: (exception, stackTrace) {
+                                              print('Error loading image for ${product['_id']}: $exception');
+                                            },
+                                          )
+                                        : const DecorationImage(
+                                            image: AssetImage('assets/placeholder.jpg'),
+                                            fit: BoxFit.cover,
+                                          ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                                      color: isFavorite ? Colors.red : Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      clientState.toggleFavorite(product);
+                                    },
+                                  ),
+                                ),
+                                if (product['productStatus'] == 'sold') ...[
+                                  Positioned(
+                                    top: 8,
+                                    left: 8,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        'Sold',
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                Text(
-                                  '\$${product['price']?.toStringAsFixed(2) ?? '0.00'}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    clientState.toggleCart(product);
-                                    if (!isInCart) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('${product['title']} added to cart!'),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: isInCart ? Colors.grey : Colors.black,
-                                    foregroundColor: Colors.white,
-                                    minimumSize: const Size(double.infinity, 36),
-                                  ),
-                                  child: Text(
-                                    isInCart ? 'Added to Cart' : 'Add to Cart',
-                                    style: GoogleFonts.poppins(fontSize: 12),
-                                  ),
-                                ),
+                                ],
                               ],
                             ),
-                          ),
-                        ],
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product['title'] ?? 'Unknown Product',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Row(
+                                        children: List.generate(5, (index) {
+                                          if (index < averageRating.floor()) {
+                                            return const Icon(
+                                              Icons.star,
+                                              color: Color.fromARGB(255, 249, 224, 4),
+                                              size: 18,
+                                            );
+                                          } else if (index < averageRating && averageRating % 1 != 0) {
+                                            return const Icon(
+                                              Icons.star_half,
+                                              color: Color.fromARGB(255, 249, 224, 4),
+                                              size: 18,
+                                            );
+                                          } else {
+                                            return const Icon(
+                                              Icons.star_border,
+                                              color: Color.fromARGB(255, 249, 224, 4),
+                                              size: 18,
+                                            );
+                                          }
+                                        }),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '${averageRating.toStringAsFixed(1)} ($ratingCount)',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${product['price']?.toStringAsFixed(2) ?? '0.00'} ETB',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color.fromARGB(255, 80, 64, 81),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
