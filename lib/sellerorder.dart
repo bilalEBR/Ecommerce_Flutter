@@ -439,79 +439,151 @@ class _ClientOrdersPageState extends State<ClientOrdersPage> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        title: Text(
-          'Orders',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+      body: Column(
+        children: [
+        Container(
+  color: primaryColor,  // This sets the background color
+  child: TabBar(
+    controller: _tabController,
+    indicatorColor: accentColor,
+    indicatorWeight: 3,
+    labelColor: accentColor,
+    unselectedLabelColor: Colors.white70,
+    labelStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+    unselectedLabelStyle: GoogleFonts.poppins(fontSize: 14),
+    tabs: const [
+      Tab(text: 'Pending', icon: Icon(Icons.pending, size: 20)),
+      Tab(text: 'Completed', icon: Icon(Icons.check_circle, size: 20)),
+      Tab(text: 'Cancelled', icon: Icon(Icons.cancel, size: 20)),
+      Tab(text: 'Sold Balance', icon: Icon(Icons.attach_money, size: 20)),
+    ],
+  ),
+),
+          Expanded(
+            child: _isLoading
+                ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(primaryColor)))
+                : _orders.isEmpty
+                    ? Center(
+                        child: Text(
+                          'No orders available',
+                          style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey[600]),
+                        ),
+                      )
+                    : TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _pendingOrders.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'No pending orders',
+                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+                                  ),
+                                )
+                              : _buildOrderList(_pendingOrders),
+                          _completedOrders.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'No completed orders',
+                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+                                  ),
+                                )
+                              : _buildOrderList(_completedOrders),
+                          _cancelledOrders.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'No cancelled orders',
+                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+                                  ),
+                                )
+                              : _buildOrderList(_cancelledOrders),
+                          _completedOrders.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'No sold balances available',
+                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+                                  ),
+                                )
+                              : _buildSoldBalanceList(),
+                        ],
+                      ),
           ),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: accentColor,
-          indicatorWeight: 3,
-          labelColor: accentColor,
-          unselectedLabelColor: Colors.white70,
-          labelStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
-          unselectedLabelStyle: GoogleFonts.poppins(fontSize: 14),
-          tabs: const [
-            Tab(text: 'Pending', icon: Icon(Icons.pending, size: 20)),
-            Tab(text: 'Completed', icon: Icon(Icons.check_circle, size: 20)),
-            Tab(text: 'Cancelled', icon: Icon(Icons.cancel, size: 20)),
-            Tab(text: 'Sold Balance', icon: Icon(Icons.attach_money, size: 20)),
-          ],
-        ),
+        ],
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(primaryColor)))
-          : _orders.isEmpty
-              ? Center(
-                  child: Text(
-                    'No orders available',
-                    style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey[600]),
-                  ),
-                )
-              : TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _pendingOrders.isEmpty
-                        ? Center(
-                            child: Text(
-                              'No pending orders',
-                              style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
-                            ),
-                          )
-                        : _buildOrderList(_pendingOrders),
-                    _completedOrders.isEmpty
-                        ? Center(
-                            child: Text(
-                              'No completed orders',
-                              style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
-                            ),
-                          )
-                        : _buildOrderList(_completedOrders),
-                    _cancelledOrders.isEmpty
-                        ? Center(
-                            child: Text(
-                              'No cancelled orders',
-                              style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
-                            ),
-                          )
-                        : _buildOrderList(_cancelledOrders),
-                    _completedOrders.isEmpty
-                        ? Center(
-                            child: Text(
-                              'No sold balances available',
-                              style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
-                            ),
-                          )
-                        : _buildSoldBalanceList(),
-                  ],
-                ),
     );
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     backgroundColor: primaryColor,
+    //     // title: Text(
+    //     //   'Orders',
+    //     //   style: GoogleFonts.poppins(
+    //     //     fontSize: 20,
+    //     //     fontWeight: FontWeight.bold,
+    //     //     color: Colors.white,
+    //     //   ),
+    //     // ),
+    //     bottom: TabBar(
+    //       controller: _tabController,
+    //       indicatorColor: accentColor,
+    //       indicatorWeight: 3,
+    //       labelColor: accentColor,
+    //       unselectedLabelColor: Colors.white70,
+    //       labelStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+    //       unselectedLabelStyle: GoogleFonts.poppins(fontSize: 14),
+    //       tabs: const [
+    //         Tab(text: 'Pending', icon: Icon(Icons.pending, size: 20)),
+    //         Tab(text: 'Completed', icon: Icon(Icons.check_circle, size: 20)),
+    //         Tab(text: 'Cancelled', icon: Icon(Icons.cancel, size: 20)),
+    //         Tab(text: 'Sold Balance', icon: Icon(Icons.attach_money, size: 20)),
+    //       ],
+    //     ),
+    //   ),
+    //   body: _isLoading
+    //       ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(primaryColor)))
+    //       : _orders.isEmpty
+    //           ? Center(
+    //               child: Text(
+    //                 'No orders available',
+    //                 style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey[600]),
+    //               ),
+    //             )
+    //           : TabBarView(
+    //               controller: _tabController,
+    //               children: [
+    //                 _pendingOrders.isEmpty
+    //                     ? Center(
+    //                         child: Text(
+    //                           'No pending orders',
+    //                           style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+    //                         ),
+    //                       )
+    //                     : _buildOrderList(_pendingOrders),
+    //                 _completedOrders.isEmpty
+    //                     ? Center(
+    //                         child: Text(
+    //                           'No completed orders',
+    //                           style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+    //                         ),
+    //                       )
+    //                     : _buildOrderList(_completedOrders),
+    //                 _cancelledOrders.isEmpty
+    //                     ? Center(
+    //                         child: Text(
+    //                           'No cancelled orders',
+    //                           style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+    //                         ),
+    //                       )
+    //                     : _buildOrderList(_cancelledOrders),
+    //                 _completedOrders.isEmpty
+    //                     ? Center(
+    //                         child: Text(
+    //                           'No sold balances available',
+    //                           style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+    //                         ),
+    //                       )
+    //                     : _buildSoldBalanceList(),
+    //               ],
+    //             ),
+    // );
   }
 }
 

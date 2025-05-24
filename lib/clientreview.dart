@@ -18,7 +18,6 @@ class ReviewPage extends StatefulWidget {
 }
 
 class _ReviewPageState extends State<ReviewPage> {
-  // final String baseUrl =  'http://localhost:3000' ;
   List<Map<String, dynamic>> reviews = [];
   int totalReviews = 0;
   bool isLoading = true;
@@ -66,14 +65,18 @@ class _ReviewPageState extends State<ReviewPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/client-products/reviews/${widget.productId}?limit=$limit&skip=$skip'),
+        Uri.parse(
+          '$baseUrl/client-products/reviews/${widget.productId}?limit=$limit&skip=$skip',
+        ),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
 
-      print('Fetch reviews response: ${response.statusCode} - ${response.body}');
+      print(
+        'Fetch reviews response: ${response.statusCode} - ${response.body}',
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -84,7 +87,9 @@ class _ReviewPageState extends State<ReviewPage> {
           hasMore = data['reviews'].length == limit;
         });
       } else if (response.statusCode == 401 || response.statusCode == 403) {
-        print('Authentication error (${response.statusCode}), redirecting to login');
+        print(
+          'Authentication error (${response.statusCode}), redirecting to login',
+        );
         Navigator.pushReplacementNamed(context, '/login');
       } else {
         setState(() {
@@ -121,9 +126,13 @@ class _ReviewPageState extends State<ReviewPage> {
 
       if (response.statusCode == 200) {
         final orders = jsonDecode(response.body);
-        final hasPurchased = orders.any((order) =>
-            order['status'] == 'completed' &&
-            order['items'].any((item) => item['productId'] == widget.productId));
+        final hasPurchased = orders.any(
+          (order) =>
+              order['status'] == 'completed' &&
+              order['items'].any(
+                (item) => item['productId'] == widget.productId,
+              ),
+        );
         setState(() {
           canReview = hasPurchased;
         });
@@ -159,9 +168,9 @@ class _ReviewPageState extends State<ReviewPage> {
 
   Future<void> _submitOrUpdateReview() async {
     if (_rating == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a rating')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a rating')));
       return;
     }
 
@@ -175,9 +184,10 @@ class _ReviewPageState extends State<ReviewPage> {
     }
 
     try {
-      final url = userReview == null
-          ? '$baseUrl/client-products/reviews/${widget.productId}'
-          : '$baseUrl/client-products/reviews/${userReview!['_id']}';
+      final url =
+          userReview == null
+              ? '$baseUrl/client-products/reviews/${widget.productId}'
+              : '$baseUrl/client-products/reviews/${userReview!['_id']}';
       final method = userReview == null ? http.post : http.put;
 
       final response = await method(
@@ -195,7 +205,11 @@ class _ReviewPageState extends State<ReviewPage> {
       if (response.statusCode == 201 || response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(userReview == null ? 'Review submitted successfully' : 'Review updated successfully'),
+            content: Text(
+              userReview == null
+                  ? 'Review submitted successfully'
+                  : 'Review updated successfully',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -208,12 +222,20 @@ class _ReviewPageState extends State<ReviewPage> {
         _checkCanReview();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to ${userReview == null ? 'submit' : 'update'} review: ${response.body}')),
+          SnackBar(
+            content: Text(
+              'Failed to ${userReview == null ? 'submit' : 'update'} review: ${response.body}',
+            ),
+          ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error ${userReview == null ? 'submitting' : 'updating'} review: $e')),
+        SnackBar(
+          content: Text(
+            'Error ${userReview == null ? 'submitting' : 'updating'} review: $e',
+          ),
+        ),
       );
     }
   }
@@ -257,9 +279,9 @@ class _ReviewPageState extends State<ReviewPage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting review: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error deleting review: $e')));
     }
   }
 
@@ -272,159 +294,185 @@ class _ReviewPageState extends State<ReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Reviews', style: GoogleFonts.poppins()),
-      ),
-      body: isLoading && reviews.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : errorMessage != null
+      appBar: AppBar(title: Text('Reviews', style: GoogleFonts.poppins())),
+      body:
+          isLoading && reviews.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : errorMessage != null
               ? Center(child: Text(errorMessage!, style: GoogleFonts.poppins()))
               : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Reviews ($totalReviews)',
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (canReview && userReview == null ||
+                        userReview != null) ...[
                       Text(
-                        'Reviews ($totalReviews)',
-                        style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                        userReview == null
+                            ? 'Write a Review'
+                            : 'Edit Your Review',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: List.generate(5, (index) {
+                          return IconButton(
+                            icon: Icon(
+                              index < _rating ? Icons.star : Icons.star_border,
+                              color: Colors.amber,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _rating = index + 1;
+                              });
+                            },
+                          );
+                        }),
+                      ),
+                      TextField(
+                        controller: _commentController,
+                        decoration: InputDecoration(
+                          labelText: 'Your Review',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        maxLines: 3,
+                        style: GoogleFonts.poppins(),
                       ),
                       const SizedBox(height: 16),
-                      if (canReview && userReview == null || userReview != null) ...[
-                        Text(
-                          userReview == null ? 'Write a Review' : 'Edit Your Review',
-                          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: List.generate(5, (index) {
-                            return IconButton(
-                              icon: Icon(
-                                index < _rating ? Icons.star : Icons.star_border,
-                                color: Colors.amber,
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: _submitOrUpdateReview,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.purple,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _rating = index + 1;
-                                });
-                              },
-                            );
-                          }),
-                        ),
-                        TextField(
-                          controller: _commentController,
-                          decoration: InputDecoration(
-                            labelText: 'Your Review',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              userReview == null
+                                  ? 'Submit Review'
+                                  : 'Update Review',
+                              style: GoogleFonts.poppins(),
                             ),
                           ),
-                          maxLines: 3,
-                          style: GoogleFonts.poppins(),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
+                          if (userReview != null) ...[
+                            const SizedBox(width: 8),
                             ElevatedButton(
-                              onPressed: _submitOrUpdateReview,
+                              onPressed: _deleteReview,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.purple,
+                                backgroundColor: Colors.red,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
                               child: Text(
-                                userReview == null ? 'Submit Review' : 'Update Review',
+                                'Delete Review',
                                 style: GoogleFonts.poppins(),
                               ),
                             ),
-                            if (userReview != null) ...[
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    if (reviews.isEmpty)
+                      Text(
+                        'No reviews yet.',
+                        style: GoogleFonts.poppins(fontSize: 14),
+                      )
+                    else
+                      ...reviews.map(
+                        (review) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                radius: 25,
+                                backgroundImage:
+                                    review['profileImage'] != null
+                                        ? NetworkImage(
+                                          '$baseUrl${review['profileImage']}',
+                                        )
+                                        : null,
+                                child:
+                                    review['profileImage'] == null
+                                        ? const Icon(Icons.person, size: 25)
+                                        : null,
+                              ),
                               const SizedBox(width: 8),
-                              ElevatedButton(
-                                onPressed: _deleteReview,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Delete Review',
-                                  style: GoogleFonts.poppins(),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      review['username'],
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      review['comment'] ?? '',
+                                      style: GoogleFonts.poppins(fontSize: 14),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: List.generate(5, (index) {
+                                        return Icon(
+                                          index < review['rating']
+                                              ? Icons.star
+                                              : Icons.star_border,
+                                          color: Colors.amber,
+                                          size: 16,
+                                        );
+                                      }),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      DateFormat('MMM dd, yyyy').format(
+                                        DateTime.parse(review['updatedAt']),
+                                      ),
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
-                          ],
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                      ],
-                      if (reviews.isEmpty)
-                        Text(
-                          'No reviews yet.',
-                          style: GoogleFonts.poppins(fontSize: 14),
-                        )
-                      else
-                        ...reviews.map((review) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage: review['profileImage'] != null
-                                        ? NetworkImage('$baseUrl${review['profileImage']}')
-                                        : null,
-                                    child: review['profileImage'] == null
-                                        ? const Icon(Icons.person, size: 25)
-                                        : null,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          review['username'],
-                                          style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          review['comment'] ?? '',
-                                          style: GoogleFonts.poppins(fontSize: 14),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: List.generate(5, (index) {
-                                            return Icon(
-                                              index < review['rating'] ? Icons.star : Icons.star_border,
-                                              color: Colors.amber,
-                                              size: 16,
-                                            );
-                                          }),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          DateFormat('MMM dd, yyyy').format(DateTime.parse(review['updatedAt'])),
-                                          style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-                      if (hasMore)
-                        TextButton(
-                          onPressed: () => _fetchReviews(loadMore: true),
-                          child: Text('Load More', style: GoogleFonts.poppins(color: Colors.blue)),
+                      ),
+                    if (hasMore)
+                      TextButton(
+                        onPressed: () => _fetchReviews(loadMore: true),
+                        child: Text(
+                          'Load More',
+                          style: GoogleFonts.poppins(color: Colors.blue),
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
+              ),
     );
   }
 }

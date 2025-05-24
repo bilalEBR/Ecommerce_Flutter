@@ -1,6 +1,3 @@
-
-
-
 // import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
 // import 'package:http/http.dart' as http;
@@ -216,8 +213,6 @@
 //     );
 //   }
 // }
-
-
 
 // // Set Profile Page
 // class SetProfilePage extends StatefulWidget {
@@ -1485,11 +1480,6 @@
 //   }
 // }
 
-
-
-
-
-
 // class SellerChatListPage extends StatefulWidget {
 //   final String token;
 //   final String sellerId; // Add sellerId
@@ -1615,7 +1605,6 @@
 //                           style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
 //                         ),
 
-
 //                         onTap: () {
 //   Navigator.push(
 //     context,
@@ -1653,9 +1642,7 @@
 //   }
 // }
 
-
-// new version to add product status 
-
+// new version to add product status
 
 // import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
@@ -1768,7 +1755,6 @@
 //     Navigator.pop(context);
 //   }
 // }
-
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -1894,7 +1880,7 @@
 //                 _onItemTapped(6);
 //               },
 //             ),
-            
+
 //           ],
 //         ),
 //       ),
@@ -3355,7 +3341,6 @@
 //     }
 //   }
 // }
-
 
 // version for ui and delete chat
 
@@ -5187,8 +5172,7 @@
 //   }
 // }
 
-
-// version to group chats 
+// version to group chats
 
 // import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
@@ -7070,10 +7054,8 @@
 //   }
 // }
 
-
-
 // version to update title index
- 
+
 // import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
 // import 'package:http/http.dart' as http;
@@ -7297,7 +7279,6 @@
 //     );
 //   }
 // }
-
 
 // class SetProfilePage extends StatefulWidget {
 //   final String sellerId;
@@ -8899,9 +8880,8 @@
 //   }
 // }
 
-
-
 // version ui
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -8917,7 +8897,11 @@ class SellerHomePage extends StatefulWidget {
   final String sellerId;
   final String token;
 
-  const SellerHomePage({super.key, required this.sellerId, required this.token});
+  const SellerHomePage({
+    super.key,
+    required this.sellerId,
+    required this.token,
+  });
 
   @override
   _SellerHomePageState createState() => _SellerHomePageState();
@@ -8968,7 +8952,12 @@ class _SellerHomePageState extends State<SellerHomePage> {
       AddProductPage(sellerId: widget.sellerId, token: widget.token),
       ClientOrdersPage(sellerId: widget.sellerId, token: widget.token),
       SellerChatListPage(token: widget.token, sellerId: widget.sellerId),
-      SetProfilePage(sellerId: widget.sellerId, token: widget.token),
+      SetProfilePage(
+        sellerId: widget.sellerId,
+        token: widget.token,
+        onProfileUpdated:
+            _fetchSellerProfile, // Pass callback to refresh profile
+      ),
       SellerChangePasswordPage(sellerId: widget.sellerId, token: widget.token),
     ];
   }
@@ -8994,14 +8983,14 @@ class _SellerHomePageState extends State<SellerHomePage> {
           _selectedIndex == 0
               ? 'Products'
               : _selectedIndex == 1
-                  ? 'Orders'
-                  : _selectedIndex == 2
-                      ? 'Chat'
-                      : _selectedIndex == 3
-                          ? 'Set Profile'
-                          : _selectedIndex == 4
-                              ? 'Change Password'
-                              : 'Seller Panel',
+              ? 'Orders'
+              : _selectedIndex == 2
+              ? 'Chat'
+              : _selectedIndex == 3
+              ? 'Set Profile'
+              : _selectedIndex == 4
+              ? 'Change Password'
+              : 'Seller Panel',
           style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -9026,39 +9015,36 @@ class _SellerHomePageState extends State<SellerHomePage> {
               ),
               accountEmail: Text(
                 'Welcome, $_sellerName',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Colors.white70,
-                ),
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.white70),
               ),
-              currentAccountPicture: _profilePicture != null
-                  ? CircleAvatar(
-                      backgroundImage: NetworkImage('$baseUrl$_profilePicture'),
-                      onBackgroundImageError: (exception, stackTrace) {
-                        print('Error loading profile picture: $exception');
-                      },
-                    )
-                  : CircleAvatar(
-                      backgroundColor: primaryColor,
-                      child: Text(
-                        _sellerName.isNotEmpty ? _sellerName[0].toUpperCase() : 'P',
-                        style: GoogleFonts.poppins(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+              currentAccountPicture:
+                  _profilePicture != null
+                      ? CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          '$baseUrl$_profilePicture',
+                        ),
+                        onBackgroundImageError: (exception, stackTrace) {
+                          print('Error loading profile picture: $exception');
+                        },
+                      )
+                      : CircleAvatar(
+                        backgroundColor: primaryColor,
+                        child: Text(
+                          _sellerName.isNotEmpty
+                              ? _sellerName[0].toUpperCase()
+                              : 'P',
+                          style: GoogleFonts.poppins(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-              decoration: BoxDecoration(
-                color: primaryColor,
-              ),
+              decoration: BoxDecoration(color: primaryColor),
             ),
             ListTile(
               leading: Icon(Icons.inventory, color: primaryColor),
-              title: Text(
-                'Products',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
+              title: Text('Products', style: GoogleFonts.poppins(fontSize: 16)),
               selected: _selectedIndex == 0,
               onTap: () {
                 _onItemTapped(0);
@@ -9066,10 +9052,7 @@ class _SellerHomePageState extends State<SellerHomePage> {
             ),
             ListTile(
               leading: Icon(Icons.receipt, color: primaryColor),
-              title: Text(
-                'Orders',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
+              title: Text('Orders', style: GoogleFonts.poppins(fontSize: 16)),
               selected: _selectedIndex == 1,
               onTap: () {
                 _onItemTapped(1);
@@ -9077,10 +9060,7 @@ class _SellerHomePageState extends State<SellerHomePage> {
             ),
             ListTile(
               leading: Icon(Icons.chat, color: primaryColor),
-              title: Text(
-                'Chat',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
+              title: Text('Chat', style: GoogleFonts.poppins(fontSize: 16)),
               selected: _selectedIndex == 2,
               onTap: () {
                 _onItemTapped(2);
@@ -9093,19 +9073,9 @@ class _SellerHomePageState extends State<SellerHomePage> {
                 style: GoogleFonts.poppins(fontSize: 16),
               ),
               selected: _selectedIndex == 3,
-              onTap: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SetProfilePage(
-                      sellerId: widget.sellerId,
-                      token: widget.token,
-                    ),
-                  ),
-                );
-                // Always refresh profile data after returning from SetProfilePage
-                _fetchSellerProfile();
+              onTap: () {
                 _onItemTapped(3);
+                _fetchSellerProfile(); // Refresh profile data
               },
             ),
             ListTile(
@@ -9121,10 +9091,7 @@ class _SellerHomePageState extends State<SellerHomePage> {
             ),
             ListTile(
               leading: Icon(Icons.logout, color: primaryColor),
-              title: Text(
-                'Logout',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
+              title: Text('Logout', style: GoogleFonts.poppins(fontSize: 16)),
               onTap: () {
                 _onItemTapped(5);
               },
@@ -9140,8 +9107,14 @@ class _SellerHomePageState extends State<SellerHomePage> {
 class SetProfilePage extends StatefulWidget {
   final String sellerId;
   final String? token;
+  final VoidCallback? onProfileUpdated; // Callback for profile update
 
-  const SetProfilePage({super.key, required this.sellerId, this.token});
+  const SetProfilePage({
+    super.key,
+    required this.sellerId,
+    this.token,
+    this.onProfileUpdated,
+  });
 
   @override
   _SetProfilePageState createState() => _SetProfilePageState();
@@ -9184,9 +9157,9 @@ class _SetProfilePageState extends State<SetProfilePage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching profile: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error fetching profile: $e')));
     }
   }
 
@@ -9227,7 +9200,10 @@ class _SetProfilePageState extends State<SetProfilePage> {
             'profilePicture',
             bytes,
             filename: _selectedProfilePicture!.name,
-            contentType: MediaType('image', _selectedProfilePicture!.extension ?? 'jpeg'),
+            contentType: MediaType(
+              'image',
+              _selectedProfilePicture!.extension ?? 'jpeg',
+            ),
           ),
         );
       }
@@ -9236,7 +9212,6 @@ class _SetProfilePageState extends State<SetProfilePage> {
       final responseBody = await http.Response.fromStream(response);
 
       if (response.statusCode == 200) {
-        // Show success SnackBar with green background and delay navigation
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Profile updated successfully'),
@@ -9244,25 +9219,27 @@ class _SetProfilePageState extends State<SetProfilePage> {
             duration: Duration(seconds: 2),
           ),
         );
-        await Future.delayed(const Duration(seconds: 2));
-        // Reset form and state
         setState(() {
           _selectedProfilePicture = null;
+          _firstNameController.text = '';
+          _lastNameController.text = '';
+          _emailController.text = '';
         });
-        _firstNameController.text = '';
-        _lastNameController.text = '';
-        _emailController.text = '';
-        Navigator.pop(context);
+        widget.onProfileUpdated?.call();
+
+        await _fetchSellerProfile();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update profile: ${responseBody.body}')),
+          SnackBar(
+            content: Text('Failed to update profile: ${responseBody.body}'),
+          ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating profile: $e')),
-      );
-      // Reset form state to allow retry
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error updating profile: $e')));
+      
       setState(() {
         _selectedProfilePicture = null;
       });
@@ -9285,7 +9262,6 @@ class _SetProfilePageState extends State<SetProfilePage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Reset form when back button is pressed
         setState(() {
           _selectedProfilePicture = null;
         });
@@ -9295,17 +9271,6 @@ class _SetProfilePageState extends State<SetProfilePage> {
         return true;
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 62, 62, 147),
-          title: Text(
-            'Set Profile',
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -9314,21 +9279,15 @@ class _SetProfilePageState extends State<SetProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Set Profile',
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        FilePickerResult? result = await FilePicker.platform.pickFiles(
-                          type: FileType.image,
-                          allowMultiple: false,
-                        );
+                        FilePickerResult? result = await FilePicker.platform
+                            .pickFiles(
+                              type: FileType.image,
+                              allowMultiple: false,
+                            );
                         if (result != null && result.files.isNotEmpty) {
                           setState(() {
                             _selectedProfilePicture = result.files.first;
@@ -9360,8 +9319,8 @@ class _SetProfilePageState extends State<SetProfilePage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Enter first name' : null,
+                    validator:
+                        (value) => value!.isEmpty ? 'Enter first name' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -9372,8 +9331,8 @@ class _SetProfilePageState extends State<SetProfilePage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Enter last name' : null,
+                    validator:
+                        (value) => value!.isEmpty ? 'Enter last name' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -9384,30 +9343,10 @@ class _SetProfilePageState extends State<SetProfilePage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Enter email' : null,
+                    validator: (value) => value!.isEmpty ? 'Enter email' : null,
                   ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      suffixIcon: TextButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Change Password feature coming soon')),
-                          );
-                        },
-                        child: const Text('Change Password'),
-                      ),
-                    ),
-                    obscureText: true,
-                    enabled: false,
-                  ),
-                  const SizedBox(height: 32),
+
+                  const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -9487,9 +9426,9 @@ class _AddProductPageState extends State<AddProductPage> {
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching products: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error fetching products: $e')));
     }
   }
 
@@ -9520,24 +9459,29 @@ class _AddProductPageState extends State<AddProductPage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting product: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error deleting product: $e')));
     }
   }
 
   void _filterProducts(String query) {
     setState(() {
       _searchQuery = query;
-      _filteredProducts = _products.where((product) {
-        final title = product['title']?.toString().toLowerCase() ?? '';
-        final searchLower = query.toLowerCase();
-        return title.contains(searchLower);
-      }).toList();
+      _filteredProducts =
+          _products.where((product) {
+            final title = product['title']?.toString().toLowerCase() ?? '';
+            final searchLower = query.toLowerCase();
+            return title.contains(searchLower);
+          }).toList();
     });
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, String productId, String productTitle) {
+  void _showDeleteConfirmationDialog(
+    BuildContext context,
+    String productId,
+    String productTitle,
+  ) {
     showDialog(
       context: context,
       builder: (dialogContext) {
@@ -9602,10 +9546,11 @@ class _AddProductPageState extends State<AddProductPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddProductFormPage(
-                      sellerId: widget.sellerId,
-                      token: widget.token,
-                    ),
+                    builder:
+                        (context) => AddProductFormPage(
+                          sellerId: widget.sellerId,
+                          token: widget.token,
+                        ),
                   ),
                 ).then((_) => _fetchProducts());
               },
@@ -9620,7 +9565,10 @@ class _AddProductPageState extends State<AddProductPage> {
             child: TextField(
               onChanged: _filterProducts,
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search, color: Color.fromARGB(255, 62, 62, 147)),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Color.fromARGB(255, 62, 62, 147),
+                ),
                 hintText: 'Search by product name',
                 hintStyle: const TextStyle(color: Colors.grey),
                 filled: true,
@@ -9631,99 +9579,123 @@ class _AddProductPageState extends State<AddProductPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color.fromARGB(255, 62, 62, 147), width: 2),
+                  borderSide: const BorderSide(
+                    color: Color.fromARGB(255, 62, 62, 147),
+                    width: 2,
+                  ),
                 ),
               ),
             ),
           ),
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: _filteredProducts.length,
-                    itemBuilder: (context, index) {
-                      final product = _filteredProducts[index];
-                      final imageUrl = product['image'] != null
-                          ? '$baseUrl${product['image']}?t=${DateTime.now().millisecondsSinceEpoch}'
-                          : null;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFF5F5F5), Color(0xFFE0E0E0)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                      itemCount: _filteredProducts.length,
+                      itemBuilder: (context, index) {
+                        final product = _filteredProducts[index];
+                        final imageUrl =
+                            product['image'] != null
+                                ? '$baseUrl${product['image']}?t=${DateTime.now().millisecondsSinceEpoch}'
+                                : null;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
                           ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                            leading: imageUrl != null
-                                ? CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage: NetworkImage(imageUrl),
-                                    backgroundColor: Colors.grey[300],
-                                    onBackgroundImageError: (exception, stackTrace) {
-                                      print('Error loading product image: $exception');
-                                    },
-                                  )
-                                : CircleAvatar(
-                                    radius: 30,
-                                    backgroundColor: Colors.grey[300],
-                                    child: const Text('No Image'),
-                                  ),
-                            title: Text(
-                              product['title'] ?? 'Unknown Product',
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit, color: Color.fromARGB(255, 62, 62, 147)),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => EditProductFormPage(
-                                          product: product,
-                                          sellerId: widget.sellerId,
-                                          token: widget.token,
-                                        ),
-                                      ),
-                                    ).then((_) => _fetchProducts());
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete, color: Color.fromARGB(255, 62, 62, 147)),
-                                  onPressed: () {
-                                    _showDeleteConfirmationDialog(
-                                      context,
-                                      product['_id'].toString(),
-                                      product['title'] ?? 'Unknown Product',
-                                    );
-                                  },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.3),
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
                                 ),
                               ],
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFF5F5F5), Color(0xFFE0E0E0)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 8.0,
+                              ),
+                              leading:
+                                  imageUrl != null
+                                      ? CircleAvatar(
+                                        radius: 30,
+                                        backgroundImage: NetworkImage(imageUrl),
+                                        backgroundColor: Colors.grey[300],
+                                        onBackgroundImageError: (
+                                          exception,
+                                          stackTrace,
+                                        ) {
+                                          print(
+                                            'Error loading product image: $exception',
+                                          );
+                                        },
+                                      )
+                                      : CircleAvatar(
+                                        radius: 30,
+                                        backgroundColor: Colors.grey[300],
+                                        child: const Text('No Image'),
+                                      ),
+                              title: Text(
+                                product['title'] ?? 'Unknown Product',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      color: Color.fromARGB(255, 62, 62, 147),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => EditProductFormPage(
+                                                product: product,
+                                                sellerId: widget.sellerId,
+                                                token: widget.token,
+                                              ),
+                                        ),
+                                      ).then((_) => _fetchProducts());
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Color.fromARGB(255, 62, 62, 147),
+                                    ),
+                                    onPressed: () {
+                                      _showDeleteConfirmationDialog(
+                                        context,
+                                        product['_id'].toString(),
+                                        product['title'] ?? 'Unknown Product',
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
           ),
         ],
       ),
@@ -9775,17 +9747,28 @@ class _AddProductFormPageState extends State<AddProductFormPage> {
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load categories: ${response.statusCode} - ${response.body}')),
+          SnackBar(
+            content: Text(
+              'Failed to load categories: ${response.statusCode} - ${response.body}',
+            ),
+          ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching categories: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error fetching categories: $e')));
     }
   }
 
-  Future<void> _addProduct(String title, String price, String description, String categoryId, PlatformFile? imageFile, String quantity) async {
+  Future<void> _addProduct(
+    String title,
+    String price,
+    String description,
+    String categoryId,
+    PlatformFile? imageFile,
+    String quantity,
+  ) async {
     if (imageFile == null || categoryId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select an image and a category')),
@@ -9846,14 +9829,16 @@ class _AddProductFormPageState extends State<AddProductFormPage> {
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add product: ${responseBody.body}')),
+          SnackBar(
+            content: Text('Failed to add product: ${responseBody.body}'),
+          ),
         );
       }
     } catch (e) {
       print('Error in _addProduct: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding product: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error adding product: $e')));
     }
   }
 
@@ -9913,8 +9898,8 @@ class _AddProductFormPageState extends State<AddProductFormPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Enter product title' : null,
+                  validator:
+                      (value) => value!.isEmpty ? 'Enter product title' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -9926,8 +9911,8 @@ class _AddProductFormPageState extends State<AddProductFormPage> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Enter product price' : null,
+                  validator:
+                      (value) => value!.isEmpty ? 'Enter product price' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -9939,8 +9924,9 @@ class _AddProductFormPageState extends State<AddProductFormPage> {
                     ),
                   ),
                   maxLines: 3,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Enter product description' : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Enter product description' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -9952,8 +9938,9 @@ class _AddProductFormPageState extends State<AddProductFormPage> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Enter product quantity' : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Enter product quantity' : null,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
@@ -9965,28 +9952,31 @@ class _AddProductFormPageState extends State<AddProductFormPage> {
                   ),
                   value: _selectedCategoryId,
                   hint: const Text('Select Category'),
-                  items: _categories.map((category) {
-                    return DropdownMenuItem<String>(
-                      value: category['_id'].toString(),
-                      child: Text(category['name']),
-                    );
-                  }).toList(),
+                  items:
+                      _categories.map((category) {
+                        return DropdownMenuItem<String>(
+                          value: category['_id'].toString(),
+                          child: Text(category['name']),
+                        );
+                      }).toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedCategoryId = value;
                     });
                   },
-                  validator: (value) =>
-                      value == null ? 'Please select a category' : null,
+                  validator:
+                      (value) =>
+                          value == null ? 'Please select a category' : null,
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () async {
                     try {
-                      FilePickerResult? result = await FilePicker.platform.pickFiles(
-                        type: FileType.image,
-                        allowMultiple: false,
-                      );
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(
+                            type: FileType.image,
+                            allowMultiple: false,
+                          );
                       if (result != null && result.files.isNotEmpty) {
                         setState(() {
                           _selectedImageFile = result.files.first;
@@ -10057,7 +10047,12 @@ class EditProductFormPage extends StatefulWidget {
   final String sellerId;
   final String? token;
 
-  const EditProductFormPage({super.key, required this.product, required this.sellerId, this.token});
+  const EditProductFormPage({
+    super.key,
+    required this.product,
+    required this.sellerId,
+    this.token,
+  });
 
   @override
   _EditProductFormPageState createState() => _EditProductFormPageState();
@@ -10105,13 +10100,15 @@ class _EditProductFormPageState extends State<EditProductFormPage> {
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load categories: ${response.body}')),
+          SnackBar(
+            content: Text('Failed to load categories: ${response.body}'),
+          ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching categories: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error fetching categories: $e')));
     }
   }
 
@@ -10153,7 +10150,10 @@ class _EditProductFormPageState extends State<EditProductFormPage> {
               'image',
               bytes,
               filename: _selectedImageFile!.name,
-              contentType: MediaType('image', _selectedImageFile!.extension ?? 'jpeg'),
+              contentType: MediaType(
+                'image',
+                _selectedImageFile!.extension ?? 'jpeg',
+              ),
             ),
           );
         } else {
@@ -10179,7 +10179,9 @@ class _EditProductFormPageState extends State<EditProductFormPage> {
           Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update product: ${responseBody.body}')),
+            SnackBar(
+              content: Text('Failed to update product: ${responseBody.body}'),
+            ),
           );
         }
       } catch (error) {
@@ -10238,8 +10240,8 @@ class _EditProductFormPageState extends State<EditProductFormPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Enter product title' : null,
+                  validator:
+                      (value) => value!.isEmpty ? 'Enter product title' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -10251,8 +10253,8 @@ class _EditProductFormPageState extends State<EditProductFormPage> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Enter product price' : null,
+                  validator:
+                      (value) => value!.isEmpty ? 'Enter product price' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -10264,8 +10266,9 @@ class _EditProductFormPageState extends State<EditProductFormPage> {
                     ),
                   ),
                   maxLines: 3,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Enter product description' : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Enter product description' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -10277,8 +10280,9 @@ class _EditProductFormPageState extends State<EditProductFormPage> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Enter product quantity' : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Enter product quantity' : null,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
@@ -10290,19 +10294,21 @@ class _EditProductFormPageState extends State<EditProductFormPage> {
                   ),
                   value: _selectedCategoryId,
                   hint: const Text('Select Category'),
-                  items: _categories.map((category) {
-                    return DropdownMenuItem<String>(
-                      value: category['_id'].toString(),
-                      child: Text(category['name']),
-                    );
-                  }).toList(),
+                  items:
+                      _categories.map((category) {
+                        return DropdownMenuItem<String>(
+                          value: category['_id'].toString(),
+                          child: Text(category['name']),
+                        );
+                      }).toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedCategoryId = value;
                     });
                   },
-                  validator: (value) =>
-                      value == null ? 'Please select a category' : null,
+                  validator:
+                      (value) =>
+                          value == null ? 'Please select a category' : null,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
@@ -10329,42 +10335,46 @@ class _EditProductFormPageState extends State<EditProductFormPage> {
                       _selectedProductStatus = value;
                     });
                   },
-                  validator: (value) =>
-                      value == null ? 'Please select a product status' : null,
+                  validator:
+                      (value) =>
+                          value == null
+                              ? 'Please select a product status'
+                              : null,
                 ),
                 const SizedBox(height: 16),
                 _currentImageUrl != null
                     ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Current Image:',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Current Image:',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
-                          const SizedBox(height: 8),
-                          Image.network(
-                            '$baseUrl$_currentImageUrl',
-                            height: 100,
-                            width: 100,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Text('Error loading image');
-                            },
-                          ),
-                        ],
-                      )
+                        ),
+                        const SizedBox(height: 8),
+                        Image.network(
+                          '$baseUrl$_currentImageUrl',
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Text('Error loading image');
+                          },
+                        ),
+                      ],
+                    )
                     : const SizedBox.shrink(),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () async {
                     try {
-                      FilePickerResult? result = await FilePicker.platform.pickFiles(
-                        type: FileType.image,
-                        allowMultiple: false,
-                      );
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(
+                            type: FileType.image,
+                            allowMultiple: false,
+                          );
                       if (result != null && result.files.isNotEmpty) {
                         setState(() {
                           _selectedImageFile = result.files.first;
@@ -10480,9 +10490,9 @@ class _SellerChatListPageState extends State<SellerChatListPage> {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching chats: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error fetching chats: $e')));
     }
   }
 
@@ -10528,9 +10538,9 @@ class _SellerChatListPageState extends State<SellerChatListPage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting chat: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error deleting chat: $e')));
     }
   }
 
@@ -10540,21 +10550,30 @@ class _SellerChatListPageState extends State<SellerChatListPage> {
       if (query.isEmpty) {
         _filteredChats = _chats;
       } else {
-        _filteredChats = _chats.where((chat) {
-          final clientName = chat['clientName']?.toString().toLowerCase() ?? '';
-          final productName = chat['productName']?.toString().toLowerCase() ?? '';
-          final latestMessage = chat['latestMessage']?.toString().toLowerCase() ?? '';
-          final searchLower = query.toLowerCase();
-          return clientName.contains(searchLower) ||
-              productName.contains(searchLower) ||
-              latestMessage.contains(searchLower);
-        }).toList();
+        _filteredChats =
+            _chats.where((chat) {
+              final clientName =
+                  chat['clientName']?.toString().toLowerCase() ?? '';
+              final productName =
+                  chat['productName']?.toString().toLowerCase() ?? '';
+              final latestMessage =
+                  chat['latestMessage']?.toString().toLowerCase() ?? '';
+              final searchLower = query.toLowerCase();
+              return clientName.contains(searchLower) ||
+                  productName.contains(searchLower) ||
+                  latestMessage.contains(searchLower);
+            }).toList();
       }
       _groupChatsByProduct();
     });
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, String chatId, String clientName, String productName) {
+  void _showDeleteConfirmationDialog(
+    BuildContext context,
+    String chatId,
+    String clientName,
+    String productName,
+  ) {
     showDialog(
       context: context,
       builder: (dialogContext) {
@@ -10600,17 +10619,17 @@ class _SellerChatListPageState extends State<SellerChatListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        title: Text(
-          'Chats',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
+      // appBar: AppBar(
+       
+      //   // title: Text(
+      //   //   'Chats',
+      //   //   style: GoogleFonts.poppins(
+      //   //     fontSize: 20,
+      //   //     fontWeight: FontWeight.bold,
+      //   //     color: Colors.white,
+      //   //   ),
+      //   // ),
+      // ),
       body: Column(
         children: [
           Padding(
@@ -10620,7 +10639,10 @@ class _SellerChatListPageState extends State<SellerChatListPage> {
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search, color: primaryColor),
                 hintText: 'Search by client, product, or message',
-                hintStyle: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
+                hintStyle: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
                 filled: true,
                 fillColor: Colors.grey[100],
                 border: OutlineInputBorder(
@@ -10635,132 +10657,176 @@ class _SellerChatListPageState extends State<SellerChatListPage> {
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(color: primaryColor, width: 1.5),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
               ),
               style: GoogleFonts.poppins(fontSize: 14),
             ),
           ),
           Expanded(
-            child: _isLoading
-                ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(primaryColor)))
-                : _groupedChats.isEmpty
+            child:
+                _isLoading
                     ? Center(
-                        child: Text(
-                          'No chats available',
-                          style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey[600]),
-                        ),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                        itemCount: _groupedChats.keys.length,
-                        itemBuilder: (context, index) {
-                          final productName = _groupedChats.keys.elementAt(index);
-                          final chats = _groupedChats[productName]!;
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 12.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: ExpansionTile(
-                              tilePadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                              childrenPadding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
-                              title: Text(
-                                '$productName (${chats.length})',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: primaryColor,
-                                ),
-                              ),
-                              children: chats.map((chat) {
-                                return Container(
-                                  margin: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 1,
-                                        blurRadius: 4,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                                    title: Text(
-                                      'Client: ${chat['clientName']}',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: primaryColor,
-                                      ),
-                                    ),
-                                    subtitle: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          chat['latestMessage'] ?? '[Empty Message]',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          _formatDateTime(chat['latestMessageTime']),
-                                          style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        IconButton(
-                                          icon: Icon(Icons.delete, color: primaryColor),
-                                          onPressed: () {
-                                            _showDeleteConfirmationDialog(
-                                              context,
-                                              chat['_id'].toString(),
-                                              chat['clientName'] ?? 'Unknown Client',
-                                              chat['productName'] ?? 'Unknown Product',
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => SellerChatPage(
-                                            chatId: chat['_id'].toString(),
-                                            productName: chat['productName'],
-                                            sellerId: widget.sellerId,
-                                            token: widget.token,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          );
-                        },
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
                       ),
+                    )
+                    : _groupedChats.isEmpty
+                    ? Center(
+                      child: Text(
+                        'No chats available',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    )
+                    : ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0,
+                        vertical: 8.0,
+                      ),
+                      itemCount: _groupedChats.keys.length,
+                      itemBuilder: (context, index) {
+                        final productName = _groupedChats.keys.elementAt(index);
+                        final chats = _groupedChats[productName]!;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: ExpansionTile(
+                            tilePadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 8.0,
+                            ),
+                            childrenPadding: const EdgeInsets.only(
+                              left: 16.0,
+                              bottom: 8.0,
+                            ),
+                            title: Text(
+                              '$productName (${chats.length})',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: primaryColor,
+                              ),
+                            ),
+                            children:
+                                chats.map((chat) {
+                                  return Container(
+                                    margin: const EdgeInsets.only(
+                                      left: 16.0,
+                                      right: 16.0,
+                                      top: 8.0,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.2),
+                                          spreadRadius: 1,
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ListTile(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 24.0,
+                                            vertical: 8.0,
+                                          ),
+                                      title: Text(
+                                        'Client: ${chat['clientName']}',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: primaryColor,
+                                        ),
+                                      ),
+                                      subtitle: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            chat['latestMessage'] ??
+                                                '[Empty Message]',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 12,
+                                              color: Colors.grey[600],
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            _formatDateTime(
+                                              chat['latestMessageTime'],
+                                            ),
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 12,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.delete,
+                                              color: primaryColor,
+                                            ),
+                                            onPressed: () {
+                                              _showDeleteConfirmationDialog(
+                                                context,
+                                                chat['_id'].toString(),
+                                                chat['clientName'] ??
+                                                    'Unknown Client',
+                                                chat['productName'] ??
+                                                    'Unknown Product',
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => SellerChatPage(
+                                                  chatId:
+                                                      chat['_id'].toString(),
+                                                  productName:
+                                                      chat['productName'],
+                                                  sellerId: widget.sellerId,
+                                                  token: widget.token,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }).toList(),
+                          ),
+                        );
+                      },
+                    ),
           ),
         ],
       ),
@@ -10781,4 +10847,6 @@ class _SellerChatListPageState extends State<SellerChatListPage> {
       return 'Just now';
     }
   }
-}
+} 
+
+
