@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ecommerce_local/signuppage.dart';
@@ -10,6 +11,7 @@ import 'package:ecommerce_local/clienthomepage.dart';
 import 'package:ecommerce_local/client-state.dart';
 import 'package:ecommerce_local/adminpage.dart';
 import 'package:ecommerce_local/sellerhomepage.dart';
+import 'package:ecommerce_local/forgot_password_page.dart'; 
 
 void main() {
   runApp(
@@ -38,6 +40,7 @@ class MyApp extends StatelessWidget {
         '/adminseller': (context) => const SellerPage(),
         '/admincategory': (context) => const AdminCategoryPage(),
         '/adminproduct': (context) => const ProductsPage(),
+        '/forgot-password': (context) => const ForgotPasswordPage(), // Added route
         '/admin': (context) {
           final args =
               ModalRoute.of(context)!.settings.arguments

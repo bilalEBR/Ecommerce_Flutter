@@ -613,42 +613,53 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                             ),
                                         ],
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              product['title'] ?? 'Unknown Product',
-                                              style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.bold),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Row(
-                                              children: List.generate(5, (index) {
-                                                if (index < averageRating.floor()) {
-                                                  return Icon(Icons.star, color: accentColor, size: 18);
-                                                } else if (index < averageRating && averageRating % 1 != 0) {
-                                                  return Icon(Icons.star_half, color: accentColor, size: 18);
-                                                } else {
-                                                  return Icon(Icons.star_border, color: accentColor, size: 18);
-                                                }
-                                              }),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              '${product['price']?.toStringAsFixed(2) ?? '0.00'} ETB',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                // color: Colors.black87,
-                                                color: primaryColor,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                     Padding(
+  padding: const EdgeInsets.all(8.0),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        product['title'] ?? 'Unknown Product',
+        style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.bold),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      const SizedBox(height: 4),
+      Row(
+        children: [
+          Row(
+            children: List.generate(5, (index) {
+              if (index < averageRating.floor()) {
+                return Icon(Icons.star, color: accentColor, size: 18);
+              } else if (index < averageRating && averageRating % 1 != 0) {
+                return Icon(Icons.star_half, color: accentColor, size: 18);
+              } else {
+                return Icon(Icons.star_border, color: accentColor, size: 18);
+              }
+            }),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '($ratingCount)',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 4),
+      Text(
+        '${product['price']?.toStringAsFixed(2) ?? '0.00'} ETB',
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: primaryColor,
+        ),
+      ),
+    ],
+  ),
+),
                                     ],
                                   ),
                                 ),
